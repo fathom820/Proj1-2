@@ -62,10 +62,9 @@ public class Client extends Thread {
 
                 if (!lock) {
                     System.out.print("Which cell would you like to draw in?\n> ");
-                    System.out.println(out.toString());
-                    out.writeBytes(userIn.nextLine());
-//                    out.flush();
-//                    lock = true;
+                    out.writeBytes(userIn.nextLine() + "\n");
+                    out.flush();
+                    lock = true;
                 }
             }
 
