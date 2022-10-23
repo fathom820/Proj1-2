@@ -41,31 +41,35 @@ public class Client extends Thread {
             while (true) {
                 String serverMessage = serverIn.nextLine();
 //                System.out.println(serverMessage);
+                if  (serverMessage.equals("1")) {
+                    lock = true;
+                }
+                if (serverMessage.equals("0")) {
+                    lock = false;
+                }
 
-                // Lock condition
-                if (serverMessage.length() == 1) {
-                    if (serverMessage.equals("1")) lock = true;
-                    else if (serverMessage.equals("0")) lock = false;
-                    else throw new RuntimeException();
-
-                } else {
-                    if (serverMessage.equals("win")) {
-                        System.out.println("Congratulations, you win!");
-                        socket.close();
-                    } else if (serverMessage.equals("garb")) {
-                        System.out.println("Invalid move.");
-                    } else {
-                        System.out.println(serverMessage);
-
+                if  (lock && !serverMessage.equals("1")) {
+                    switch(serverMessage) {
+                        case "win":
+                            System.out.println("Congratulations, you win!");
+                            socket.close();
+                            break;
+                        case "garb":
+                            System.out.println("Invalid move");
+                            break;
+                        default:
+                            System.out.println(serverMessage);
+                            // last line of game board
+                            if (serverMessage.equals("")) {
+                                out.writeBytes("1\n");
+                                System.out.print("Which cell would you like to draw in?\n> ");
+                                out.writeBytes(userIn.nextLine() + "\n");
+                                lock = false;
+                            }
+                            break;
                     }
                 }
 
-                if (!lock) {
-                    System.out.print("Which cell would you like to draw in?\n> ");
-                    out.writeBytes(userIn.nextLine() + "\n");
-                    out.flush();
-                    lock = true;
-                }
             }
 
         } catch (Exception e) {

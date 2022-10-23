@@ -13,9 +13,12 @@ public class ServerClientThread extends Thread {
     char player;
 
     boolean clientLocked;
+    boolean lock;
+
     public ServerClientThread(Socket incomingClient, char player) {
         client = incomingClient;
         clientLocked = true;
+        lock = false;
         this.player = player;
     }
 
@@ -29,7 +32,12 @@ public class ServerClientThread extends Thread {
 
             while(true) {
                 message = in.nextLine();
-                System.out.println(message);
+                if (message.equals("1")) lock = true;
+                if (message.equals("0")) lock = false;
+
+                if (lock && !message.equals("1")) {
+
+                }
             }
 
         } catch (IOException e) {
@@ -43,7 +51,7 @@ public class ServerClientThread extends Thread {
         out.flush();
     }
 
-    public void setClientLocked(boolean clientLocked) {
+    public void setClientLock(boolean clientLocked) throws IOException {
         this.clientLocked = clientLocked;
     }
 }

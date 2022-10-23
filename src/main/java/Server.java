@@ -57,9 +57,9 @@ public class Server extends Thread {
             try {
                 // unlock player
                 if (currentPlayerThread.clientLocked) {
+                    currentPlayerThread.sendToClient("1");
                     currentPlayerThread.sendToClient(game.toString());
-                    currentPlayerThread.sendToClient("0");
-                    currentPlayerThread.setClientLocked(false);
+                    currentPlayerThread.setClientLock(true);
                 }
 
             } catch (IOException e) {
@@ -68,7 +68,8 @@ public class Server extends Thread {
         }
     }
 
-    private void serverMsg(String msg) {
+    public static void serverMsg(String msg) {
         System.out.println("[Server] " + msg);
     }
+
 }
