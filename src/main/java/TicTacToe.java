@@ -73,12 +73,29 @@ public class TicTacToe {
      * which player is actively moving.  Will not update a location
      * if a player has already played there or if player_move is
      * set to -1.
-     * @param r Row player is making a move.
-     * @param c Column player is making a move.
      * @return True if the game_board was updated, false otherwise.
      */
-    public boolean makeMove(int r, int c)
-    {
+    public boolean makeMove(String move) {
+        int r, c;
+
+        switch (String.valueOf(move.charAt(0)).toUpperCase()) {
+            case "A":
+                c = 0;
+                break;
+            case "B":
+                c = 1;
+                break;
+            case "C":
+                c = 2;
+                break;
+            default:
+                return false;
+        }
+
+        r = Integer.parseInt(String.valueOf(move.charAt(1))) - 1;
+        System.out.println(r);
+
+
         boolean success = false;
         if (game_board[r][c] == ' ')
         {
@@ -147,10 +164,10 @@ public class TicTacToe {
         board += "* A B C\n";
         for (int r=0;r<game_board.length;r++)
         {
-            board += + r + " ";
+            board += + (r+1) + " ";
             for (int c=0;c<game_board[r].length;c++)
             {
-                board += "- ";
+                board += game_board[r][c] + " ";
             }
 
             board += "\n";

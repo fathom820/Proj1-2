@@ -7,11 +7,13 @@ import java.util.Scanner;
  */
 public class Client extends Thread {
     Socket socket;
-    boolean lock, askForIP;
+    boolean enabled, askForIP;
 
+    // IP will be needed if game is running in client-only mode
+    // otherwise it will automatically connect to the local server's IP
     public Client(boolean askForIP) {
         socket = null;
-        lock = true;
+        enabled = true;
         this.askForIP = askForIP;
     }
 
@@ -29,26 +31,26 @@ public class Client extends Thread {
                 socket = new Socket("127.0.0.1", 4446);
             }
 
-
-
+            // used to talk to server
             DataOutputStream out = new DataOutputStream((socket.getOutputStream()));
             out.flush();
 
+            // used for server to talk to client
             Scanner serverIn = new Scanner(socket.getInputStream()); // messages from server
-
-
 
             while (true) {
                 String serverMessage = serverIn.nextLine();
-//                System.out.println(serverMessage);
+
+                // server-client locking mechanism, or mutex
                 if  (serverMessage.equals("1")) {
-                    lock = true;
+                    enabled = true;
                 }
                 if (serverMessage.equals("0")) {
-                    lock = false;
+                    enabled = false;
                 }
 
-                if  (lock && !serverMessage.equals("1")) {
+                // if server sends a message to player that isn't lock
+                if  (enabled && !serverMessage.equals("1")) {
                     switch(serverMessage) {
                         case "win":
                             System.out.println("Congratulations, you win!");
@@ -59,19 +61,15 @@ public class Client extends Thread {
                             break;
                         default:
                             System.out.println(serverMessage);
-                            // last line of game board
-                            if (serverMessage.equals("")) {
-                                out.writeBytes("1\n");
+                            if (serverMessage.equals("")) { // last line of game board is empty so client knows when to send lock
+                                out.writeBytes("1\n"); // send unlock to server
                                 System.out.print("Which cell would you like to draw in?\n> ");
-                                out.writeBytes(userIn.nextLine() + "\n");
-                                lock = false;
+                                out.writeBytes(userIn.nextLine() + "\n"); // take user input and send to server
                             }
                             break;
                     }
                 }
-
             }
-
         } catch (Exception e) {
             System.out.println("Client Error: " + e);
         }
